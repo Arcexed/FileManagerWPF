@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -32,21 +33,40 @@ namespace FileManagerWPF
         {
             TextBox s = (TextBox)sender;
             string diskName = s.Text.Split('\t')[0];
-            MainViewModel.path = diskName;
+            dc.path = diskName;
 
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            dc.reloadDisksThread.Abort();
         }
 
         private void ComboBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
             {
-
+                ComboBox comboBox = (ComboBox) sender;
+                if (Directory.Exists(comboBox.Text))
+                {
+                    dc.path = comboBox.Text;
+                    dc.RefreshAllCommand.Execute(true);
+                }
+                else
+                {
+                    MessageBox.Show(this, "This path not exists", "Error", MessageBoxButton.OK, MessageBoxImage.Hand);
+                }
             }
+        }
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ComboBox comboBox = (ComboBox) sender;
+            dc.path = comboBox.SelectedValue.ToString();
+        }
+
+        private void ComboBox_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+        {
+
         }
     }
 }

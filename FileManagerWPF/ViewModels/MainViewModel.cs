@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using FileManagerWPF.Models;
 using RelayCommand = GalaSoft.MvvmLight.CommandWpf.RelayCommand;
@@ -15,127 +16,123 @@ namespace FileManagerWPF
     {
         public MainViewModel()
         {
-            RefreshDrivesCommand = new RelayCommand(ExecuteRefreshDrives);
-            reloadDisksThread = new Thread(ReloadDrives);
-            reloadDisksThread.Start();
+            ExecuteRefreshAll();
+            RefreshAllCommand = new RelayCommand(ExecuteRefreshAll);
         }
 
-        public Thread reloadDisksThread;
-        public ObservableCollection<Files> FilesList
-        {
-            get
-            {
-                List<string> list = Directory.GetFiles(path).ToList();
-                var filesCollection = new ObservableCollection<Files>();
-                foreach (var element in list)
-                {
-                    filesCollection.Add(new Files()
-                    {
-                        Path=element,
-                        Name=element.Split('\\').Last()
-                    });
-                }
-                return filesCollection;
-            }
-        }
-        public ObservableCollection<FilesAndDirectories> FilesAndDirectories
-        {
-            get
-            {
-                ObservableCollection<FilesAndDirectories> all = new ObservableCollection<FilesAndDirectories>();
-                foreach (var directory in DirectoriesList)
-                {
-                    DirectoryInfo info = new DirectoryInfo(directory.Path);
-                    all.Add(new FilesAndDirectories()
-                    {
-                         Name=info.Name,
-                         Path=info.FullName,
-                         Extension = "Directory",
-                         DateEdited = info.LastWriteTime.ToLongDateString()
-                    });
-                }
-                foreach (var file in FilesList)
-                {
-                    DirectoryInfo info = new DirectoryInfo(file.Path);
-                    all.Add(new FilesAndDirectories()
-                    {
-                        Name = info.Name,
-                        Path=info.FullName,
-                        Extension = info.Extension,
-                        DateEdited = info.LastWriteTime.ToLongDateString()
-                    });
-                }
-                return all;
-            }
-        }
-        //private ObservableCollection<Drive> _drivesList;
+        public ObservableCollection<Files> FilesList { get; set; }= new ObservableCollection<Files>();
+        public ObservableCollection<Directories> DirectoriesList { get; set; } = new ObservableCollection<Directories>();
+        public ObservableCollection<Drive> DrivesList { get; set; } = new ObservableCollection<Drive>();
 
-        //public ObservableCollection<Drive> DrivesList
-        //{
-        //    get => _drivesList;
-        //    set => _drivesList = value;
-        //}
+        public ObservableCollection<FilesAndDirectories> FilesAndDirectories { get; set; } =
+            new ObservableCollection<FilesAndDirectories>();
 
-        //можешь делать так и так
-        // если допальнительная логика не будет в геттере или сеттере то есть синтаксис короче
-        //они то же самое
-        private void ReloadDrives()
+
+
+        private string _path { get; set; } = @"C:\";
+        public string path
         {
-            while (true)
+            get => _path;
+            set
             {
-                ObservableCollection<Drive> drivesCollection = new ObservableCollection<Drive>();
-                foreach (var drive in DriveInfo.GetDrives())
+                if (path != value)
                 {
-                    string Name = drive.Name;
-                    string Type = drive.DriveType.ToString();
-                    int PersentUsedDiskSpace = 0;
-                    if (drive.DriveType == DriveType.Fixed || drive.DriveType==DriveType.Removable)
-                    {
-                        
-                        PersentUsedDiskSpace = Convert.ToInt32(Math.Round((double)(drive.TotalSize - drive.TotalFreeSpace) /
-                            drive.TotalSize * 100));
-                    }
-                    else
-                    {
-                        
-                    }
-                    drivesCollection.Add(new Drive()
-                    {
-                        Name = Name,
-                        Type = Type,
-                        PersentUsedDiskSpace = PersentUsedDiskSpace
-                    });
-                    
+                    _path = value;
                 }
-                if (drivesCollection != DrivesList)
-                {
-                    
-                    App.Current.Dispatcher.Invoke((Action)delegate
-                    {
-                        drivesList.Clear();
-                        drivesList = drivesCollection;
-                    });
-                }
-                Thread.Sleep(5000);
+                RefreshAllCommand.Execute(true);
+
+
+
             }
         }
 
-        private ObservableCollection<Drive> drivesList = new ObservableCollection<Drive>();
-
-        public ObservableCollection<Drive> DrivesList
-        {
-            get => drivesList;
-            set => drivesList = value;
-        }
-
-
-
-        public static string path { get; set; } = @"C:\";
 
         // GET DIRECTORIES
-        public ObservableCollection<Directories> DirectoriesList
+
+
+
+
+
+
+
+        public string[] PathComboBox
         {
             get
+            {
+                string[] list = Directory.GetDirectories(path);
+                List<string> tempList = new List<string>();
+                foreach (var temp in list)
+                {
+                    if (!temp.Contains($"$"))
+                    {
+                        tempList.Add(temp);
+                    }   
+                }
+                return tempList.ToArray();
+            }
+        }
+
+       
+        // GET DRIVES
+        public ICommand RefreshAllCommand { get; private set; }
+        private void ExecuteRefreshAll()
+        {
+            RefreshDrives();
+            RefreshDirectories();
+            RefreshFiles();
+            RefreshDirectoriesAndFiles();
+        }
+
+        private void RefreshDrives()
+        {
+            DrivesList.Clear();
+            foreach (var drive in DriveInfo.GetDrives())
+            {
+                string Name = drive.Name;
+                string Type = drive.DriveType.ToString();
+                int PersentUsedDiskSpace = 0;
+                if (drive.DriveType == DriveType.Fixed || drive.DriveType == DriveType.Removable)
+                {
+
+                    PersentUsedDiskSpace = Convert.ToInt32(Math.Round((double)(drive.TotalSize - drive.TotalFreeSpace) /
+                        drive.TotalSize * 100));
+                }
+                else
+                {
+
+                }
+                DrivesList.Add(new Drive()
+                {
+                    Name = Name,
+                    Type = Type,
+                    PersentUsedDiskSpace = PersentUsedDiskSpace
+                });
+
+            }
+        }
+
+        private void RefreshFiles()
+        {
+            FilesList.Clear();
+            
+            List<string> list = Directory.GetFiles(path).ToList();
+            var filesCollection = new ObservableCollection<Files>();
+            foreach (var element in list)
+            {
+                filesCollection.Add(new Files()
+                {
+                    Path = element,
+                    Name = element.Split('\\').Last()
+                });
+            }
+
+            FilesList = filesCollection;
+        }
+
+        private void RefreshDirectories()
+        {
+            DirectoriesList.Clear();
+            try
             {
                 List<string> list = Directory.GetDirectories(path).ToList();
                 var directoryCollection = new ObservableCollection<Directories>();
@@ -145,69 +142,46 @@ namespace FileManagerWPF
                     {
                         Path = element,
                         Name = element.Split('\\').Last(),
-                        
+
                     });
                 }
-                return directoryCollection;
+
+
+                DirectoriesList = directoryCollection;
             }
-        }
-
-
-
-
-
-
-        public static string[] PathComboBox
-        {
-            get
+            catch (ArgumentException ex)
             {
-                string[] list = Directory.GetDirectories(path);
-                return list;
+                MessageBox.Show("Invaild path", "Error", MessageBoxButton.OK,MessageBoxImage.Hand);
             }
         }
 
-       
-        // GET DRIVES
-        public ICommand RefreshDrivesCommand { get; private set; }
-        private void ExecuteRefreshDrives()
+        private void RefreshDirectoriesAndFiles()
         {
-            DrivesList.Clear();
-            //foreach (var drive in DriveInfo.GetDrives())
-            //{
-            //    if (drive.DriveType == DriveType.Fixed)
-            //    {
-            //        DrivesList.Add(
+            FilesAndDirectories.Clear();
+            foreach (var directory in DirectoriesList)
+            {
+                DirectoryInfo info = new DirectoryInfo(directory.Path);
+                FilesAndDirectories.Add(new FilesAndDirectories()
+                {
+                    Name = info.Name,
+                    Path = info.FullName,
+                    Extension = "Directory",
+                    DateEdited = info.LastWriteTime.ToShortDateString()
+                });
+            }
+            foreach (var file in FilesList)
+            {
+                FileInfo info = new FileInfo(file.Path);
+                FilesAndDirectories.Add(new FilesAndDirectories()
+                {
+                    Name = info.Name,
+                    Path = info.FullName,
+                    Extension = info.Extension,
+                    DateEdited = info.LastWriteTime.ToShortDateString(),
+                    Size = Math.Round((double)(info.Length / 1000)).ToString() + " Kbyte"
+                });
+            }
 
-            //            new Drive()
-            //            {
-            //                Name = drive.Name,
-            //                Type = drive.DriveType.ToString(),
-            //                PersentUsedDiskSpace = (double)(drive.TotalSize - drive.TotalFreeSpace) / drive.TotalSize * 100
-            //            });
-            //    }
-            //    else if (drive.DriveType == DriveType.Removable)
-            //    {
-            //        DrivesList.Add(
-
-            //            new Drive()
-            //            {
-            //                Name = drive.Name,
-            //                Type = drive.DriveType.ToString(),
-            //                PersentUsedDiskSpace = (double)(drive.TotalSize - drive.TotalFreeSpace) / drive.TotalSize * 100
-            //            });
-            //    }
-            //    else
-            //    {
-            //        DrivesList.Add(
-
-            //            new Drive()
-            //            {
-            //                Name = drive.Name,
-            //                Type = drive.DriveType.ToString()
-            //            });
-            //    }
-
-            //}
         }
     }
 }
