@@ -9,11 +9,12 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using FileManagerWPF.Models;
+using GalaSoft.MvvmLight;
 using RelayCommand = GalaSoft.MvvmLight.CommandWpf.RelayCommand;
 
 namespace FileManagerWPF
 {
-    class MainViewModel
+    class MainViewModel : ViewModelBase
     {
         public MainViewModel()
         {
@@ -32,28 +33,25 @@ namespace FileManagerWPF
         public ObservableCollection<FilesAndDirectories> FilesAndDirectories { get; set; } =
             new ObservableCollection<FilesAndDirectories>();
 
+        public const string defpath = @"C:\";
 
-        private string _path { get; set; } = @"C:\";
+        private string _path;
 
-        public string path
+        public string CurrentPath
         {
             get => _path;
             set
             {
-                if (path != value)
-                {
-                    _path = value;
-                }
-
-                RefreshAllCommand.Execute(true);
+                _path = value;
+                RaisePropertyChanged();
+                ExecuteRefreshAll();
             }
         }
-
 
         // GET DIRECTORIES
 
 
-        private List<string> _pathComboBox { get; set; } = new List<string>();
+        private List<string> _pathComboBox = new List<string>();
 
         public List<string> PathComboBox
         {
@@ -61,9 +59,9 @@ namespace FileManagerWPF
             set { _pathComboBox = value; }
         }
 
-        private void RefreshPathComboBox()
+        public void RefreshPathComboBox(string pth = null)
         {
-            PathComboBox.Clear();
+            PathComboBox = new List<string>();
             var directory = DirectoriesList;
             foreach (var temp in directory)
             {
@@ -72,6 +70,15 @@ namespace FileManagerWPF
                     PathComboBox.Add(temp.Path);
                 }
             }
+            if (pth != null)
+            {
+                var index = PathComboBox.IndexOf(pth);
+                if (index >= 0)
+                {
+                    CurrentPath = PathComboBox[index];
+                }
+            }
+
         }
 
         // GET DRIVES
@@ -89,7 +96,7 @@ namespace FileManagerWPF
             }
             catch (ArgumentException ex)
             {
-                MessageBox.Show("Invaild path", "Error", MessageBoxButton.OK, MessageBoxImage.Hand);
+                MessageBox.Show("Invaild CurrentPath", "Error", MessageBoxButton.OK, MessageBoxImage.Hand);
             }
             catch (UnauthorizedAccessException ex)
             {
@@ -112,7 +119,7 @@ namespace FileManagerWPF
                 if (drive.DriveType == DriveType.Fixed || drive.DriveType == DriveType.Removable)
                 {
                     PersentUsedDiskSpace = Convert.ToInt32(Math.Round(
-                        (double) (drive.TotalSize - drive.TotalFreeSpace) /
+                        (double)(drive.TotalSize - drive.TotalFreeSpace) /
                         drive.TotalSize * 100));
                 }
                 else
@@ -132,7 +139,7 @@ namespace FileManagerWPF
         {
             FilesList.Clear();
 
-            List<string> list = Directory.GetFiles(path).ToList();
+            List<string> list = Directory.GetFiles(string.IsNullOrEmpty(CurrentPath) ? defpath : CurrentPath).ToList();
             var filesCollection = new ObservableCollection<Files>();
             foreach (var element in list)
             {
@@ -150,7 +157,7 @@ namespace FileManagerWPF
         {
             DirectoriesList.Clear();
 
-            List<string> list = Directory.GetDirectories(path).ToList();
+            List<string> list = Directory.GetDirectories(string.IsNullOrEmpty(CurrentPath) ? defpath : CurrentPath).ToList();
             var directoryCollection = new ObservableCollection<Directories>();
             foreach (var element in list)
             {
@@ -189,7 +196,7 @@ namespace FileManagerWPF
                     Path = info.FullName,
                     Extension = info.Extension,
                     DateEdited = info.LastWriteTime.ToShortDateString(),
-                    Size = Math.Round((double) (info.Length / 1000)).ToString() + " Kbyte"
+                    Size = Math.Round((double)(info.Length / 1000)).ToString() + " Kbyte"
                 });
             }
         }
@@ -198,10 +205,10 @@ namespace FileManagerWPF
 
         private void ExecuteUpToDirectory()
         {
-            DirectoryInfo directory = new DirectoryInfo(path);
+            DirectoryInfo directory = new DirectoryInfo(CurrentPath);
             string parent = directory.Root.FullName;
-            this.path = parent;
-           
+            this.CurrentPath = parent;
+
         }
     }
 }

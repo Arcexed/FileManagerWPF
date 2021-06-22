@@ -36,34 +36,47 @@
             <Border.Effect>
                 <DropShadowEffect BlurRadius="30" Color="LightGray" ShadowDepth="0"/>
             </Border.Effect>
-            <StackPanel>
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="0.2*"/>
-                        <RowDefinition Height="0.8*"/>
-                    </Grid.RowDefinitions>
-                    <Border Grid.Row="0">
-                        <Grid Margin="0 0 0 20">
-                            <Button HorizontalAlignment="Left" MinHeight="30" MinWidth="20" Content="Refresh" Command="{Binding RefreshAllCommand}"/>
-                            <Button HorizontalAlignment="Left" Margin="110 0 0 0" Content="UP" Command="{Binding UpToDirectoryCommand}"/>
-                            <ComboBox x:Name="ComboBoxPath" SelectedValue="{Binding path}" HorizontalAlignment="Center" VerticalAlignment="Center" MinHeight="30" MinWidth="230" Margin="115 0 0 0" IsEditable="True" ItemsSource="{Binding Path=PathComboBox}" KeyDown="ComboBox_KeyDown" SelectionChanged="ComboBox_SelectionChanged" ContextMenuOpening="ComboBox_ContextMenuOpening"/>
-                            <Button HorizontalAlignment="Right" Content="GO" Style="{StaticResource MaterialDesignFlatButton}"/>
-                        </Grid>
-                    </Border>
-                    <DataGrid Grid.Row="1" SelectionMode="Single" SelectionUnit="FullRow" materialDesign:ScrollBarAssist.ButtonsVisibility="Visible" VerticalScrollBarVisibility="Visible" AutoGenerateColumns="False" IsReadOnly="True" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="0.2*"/>
+                    <RowDefinition Height="0.8*"/>
+                </Grid.RowDefinitions>
+                <Border Grid.Row="0">
+                    <Grid Margin="0 0 0 20">
+                        <Button HorizontalAlignment="Left" MinHeight="30" MinWidth="20" Content="Refresh" Command="{Binding RefreshAllCommand}"/>
+                        <Button HorizontalAlignment="Left" Margin="110 0 0 0" Content="UP" Command="{Binding UpToDirectoryCommand}"/>
+                        <ComboBox x:Name="ComboBoxPath" Text="Select" SelectedValue="{Binding CurrentPath}" HorizontalAlignment="Center" VerticalAlignment="Center" MinHeight="30" MinWidth="230" Margin="115 0 0 0" IsEditable="True" ItemsSource="{Binding Path=PathComboBox}" KeyDown="ComboBox_KeyDown" SelectionChanged="ComboBox_SelectionChanged" ContextMenuOpening="ComboBox_ContextMenuOpening" />
+                        <Button HorizontalAlignment="Right" Content="GO" Style="{StaticResource MaterialDesignFlatButton}"/>
+                    </Grid>
+                </Border>
+                <DataGrid Grid.Row="1" SelectionMode="Single" SelectionUnit="FullRow" materialDesign:ScrollBarAssist.ButtonsVisibility="Visible" VerticalScrollBarVisibility="Visible" AutoGenerateColumns="False" IsReadOnly="True" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"
                               VerticalAlignment="Stretch" Margin="10,10,10,10" ItemsSource="{Binding FilesAndDirectories}"
                               MouseLeftButtonDown="DataGrid_MouseLeftButtonDown">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Width="0.55*" Header="Name" Binding="{Binding Name}"/>
-                            <DataGridTextColumn Width="0.2*" Header="Edited Date" Binding="{Binding DateEdited}"/>
-                            <DataGridTextColumn Width="0.15*" Header="Type" Binding="{Binding Extension}"/>
-                            <DataGridTextColumn Width="0.1*" Header="Size" Binding="{Binding Size}"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </Grid>
-                
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Width="0.55*" Header="Name" >
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <Image MaxHeight="25" Grid.Column="0" Source="icons8-folder-30.png">
 
-            </StackPanel>
+                                        </Image>
+                                        <TextBlock Text="{Binding Name}" Grid.Column="1"></TextBlock>
+                                    </Grid>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Width="0.2*" Header="Edited Date" Binding="{Binding DateEdited}"/>
+                        <DataGridTextColumn Width="0.15*" Header="Type" Binding="{Binding Extension}"/>
+                        <DataGridTextColumn Width="0.1*" Header="Size" Binding="{Binding Size}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+
+
         </Border>
 
     </Grid>

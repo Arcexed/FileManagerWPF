@@ -43,14 +43,14 @@ namespace FileManagerWPF
                 {
                     if (drive.Type != DriveType.CDRom.ToString())
                     {
-                        dc.path = diskName;
-                        ComboBoxPath.SelectedValue = dc.path;
+                        dc.CurrentPath = diskName;
+                        ComboBoxPath.SelectedValue = dc.CurrentPath;
                     }
                     else
                     {
                         DirectoryInfo directoryInfo = new DirectoryInfo(diskName);
                         if (directoryInfo.Exists)
-                            dc.path = diskName;
+                            dc.CurrentPath = diskName;
                         else
                         {
                             dc.FilesAndDirectories.Clear();
@@ -73,13 +73,13 @@ namespace FileManagerWPF
                 ComboBox comboBox = (ComboBox) sender;
                 if (Directory.Exists(comboBox.Text))
                 {
-                    dc.path = comboBox.Text;
-                    ComboBoxPath.SelectedValue = dc.path;
+                    dc.CurrentPath = comboBox.Text;
+                    ComboBoxPath.SelectedValue = dc.CurrentPath;
 
                 }
                 else
                 {
-                    MessageBox.Show(this, "This path not exists", "Error", MessageBoxButton.OK, MessageBoxImage.Hand);
+                    MessageBox.Show(this, "This CurrentPath not exists", "Error", MessageBoxButton.OK, MessageBoxImage.Hand);
                 }
             }
         }
@@ -87,7 +87,7 @@ namespace FileManagerWPF
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ComboBox comboBox = (ComboBox) sender;
-            //dc.path = comboBox.SelectedValue.ToString();
+            //dc.CurrentPath = comboBox.SelectedValue.ToString();
         }
 
         private void ComboBox_ContextMenuOpening(object sender, ContextMenuEventArgs e)
@@ -101,9 +101,7 @@ namespace FileManagerWPF
             FilesAndDirectories element = (FilesAndDirectories)grid.SelectedItem;
             if (element.Extension == "Directory")
             {
-                dc.path = element.Path;
-                ComboBoxPath.SelectedValue = dc.path;
-
+                dc.RefreshPathComboBox(element.Path); 
             }
             else
             {
@@ -120,7 +118,7 @@ namespace FileManagerWPF
         private void DiskTextBox_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             FilesAndDirectories textBox = (FilesAndDirectories) sender;
-            dc.path = textBox.Path;
+            dc.CurrentPath = textBox.Path;
             
         }
 
