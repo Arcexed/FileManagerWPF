@@ -14,5 +14,6 @@ namespace FileManagerWPF.Models
         public string Extension { get; set; }
         public string Size { get; set; } = null;
 
+
     }
 }
