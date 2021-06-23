@@ -35,7 +35,7 @@ namespace FileManagerWPF
 
         public const string defpath = @"C:\";
 
-        private string _path;
+        private string _path = defpath;
 
         public string CurrentPath
         {
@@ -65,10 +65,9 @@ namespace FileManagerWPF
             var directory = DirectoriesList;
             foreach (var temp in directory)
             {
-                if (!temp.Path.Contains("$"))
-                {
-                    PathComboBox.Add(temp.Path);
-                }
+
+                PathComboBox.Add(temp.Path);
+
             }
             if (pth != null)
             {
@@ -94,13 +93,18 @@ namespace FileManagerWPF
                 RefreshPathComboBox();
                 RefreshDirectoriesAndFiles();
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 MessageBox.Show("Invaild CurrentPath", "Error", MessageBoxButton.OK, MessageBoxImage.Hand);
             }
-            catch (UnauthorizedAccessException ex)
+            catch (UnauthorizedAccessException)
             {
                 MessageBox.Show("Don't have access", "Error", MessageBoxButton.OK, MessageBoxImage.Hand);
+                DirectoryInfo info = new DirectoryInfo(_path);
+                if (info.Parent.FullName != null)
+                {
+                    CurrentPath = info.Parent.FullName;
+                }
             }
             catch (Exception ex)
             {
@@ -206,9 +210,10 @@ namespace FileManagerWPF
         private void ExecuteUpToDirectory()
         {
             DirectoryInfo directory = new DirectoryInfo(CurrentPath);
-            string parent = directory.Root.FullName;
-            this.CurrentPath = parent;
-
+            if (directory.Parent != null)
+            {
+                this.CurrentPath = directory.Parent.FullName;
+            }
         }
     }
 }

@@ -99,17 +99,20 @@ namespace FileManagerWPF
         {
             DataGrid grid = (DataGrid) sender;
             FilesAndDirectories element = (FilesAndDirectories)grid.SelectedItem;
-            if (element.Extension == "Directory")
+            if (element != null)
             {
-                dc.RefreshPathComboBox(element.Path); 
-            }
-            else
-            {
-                using (Process process = new Process())
+                if (element.Extension == "Directory")
                 {
-                    process.StartInfo.UseShellExecute = true;
-                    process.StartInfo.FileName = element.Path;
-                    process.Start();
+                    dc.RefreshPathComboBox(element.Path);
+                }
+                else
+                {
+                    using (Process process = new Process())
+                    {
+                        process.StartInfo.UseShellExecute = true;
+                        process.StartInfo.FileName = element.Path;
+                        process.Start();
+                    }
                 }
             }
 
@@ -122,5 +125,29 @@ namespace FileManagerWPF
             
         }
 
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            MenuItem filesAndDirectories = (MenuItem) sender;
+            var ItemToDelete =(FilesAndDirectories)FilesAndDirectoriesDataGrid.SelectedCells.FirstOrDefault().Item;
+            if (ItemToDelete != null)
+            {
+                try
+                {
+                    if (ItemToDelete.Extension.ToLower() == "directory")
+                    {
+                        Directory.Delete(ItemToDelete.Path);
+                    }
+                    else
+                    {
+                        File.Delete(ItemToDelete.Path);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(this, $"{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                dc.RefreshAllCommand.Execute(true);
+            }
+        }
     }
 }

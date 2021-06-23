@@ -7,26 +7,25 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
         Title="MainWindow" MinHeight="550" MinWidth="800" Closing="Window_Closing">
-    <Grid Background="#ffdadada">
+    <Grid  Background="#ffdadada">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="0.35*"/>
-            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="0.22*"/>
+            <ColumnDefinition Width="0.75*"/>
         </Grid.ColumnDefinitions>
         <Border Grid.Column="0" Margin="5 10 10 10" Background="White" VerticalAlignment="Stretch" Padding="30" CornerRadius="20" HorizontalAlignment="Stretch">
             <Border.Effect>
                 <DropShadowEffect BlurRadius="30" Color="LightGray" ShadowDepth="0"/>
             </Border.Effect>
             <StackPanel>
-                <Grid Margin="0 0 0 0" HorizontalAlignment="Center" VerticalAlignment="Bottom"></Grid>
-                <DataGrid>
+                <DataGrid FontSize="17" HorizontalAlignment="Stretch">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Disks"/>
+                        <DataGridTextColumn Header="Disks" Width="*"/>
                     </DataGrid.Columns>
                 </DataGrid>
                 <ListView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding DrivesList}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
                     <ListView.ItemTemplate>
                         <DataTemplate >
-                            <TextBox x:Name="DiskTextBox" IsReadOnly="True" Text="{Binding DriveInfo,Mode=OneWay}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" PreviewMouseLeftButtonDown="DiskTextBox_PreviewMouseLeftButtonDown" MouseLeftButtonDown="DiskTextBox_MouseLeftButtonDown"></TextBox>
+                            <TextBox x:Name="DiskTextBox" HorizontalContentAlignment="Stretch" IsReadOnly="True" Text="{Binding DriveInfo,Mode=OneWay}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" PreviewMouseLeftButtonDown="DiskTextBox_PreviewMouseLeftButtonDown" MouseLeftButtonDown="DiskTextBox_MouseLeftButtonDown"></TextBox>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
@@ -49,22 +48,22 @@
                         <Button HorizontalAlignment="Right" Content="GO" Style="{StaticResource MaterialDesignFlatButton}"/>
                     </Grid>
                 </Border>
-                <DataGrid Grid.Row="1" SelectionMode="Single" SelectionUnit="FullRow" materialDesign:ScrollBarAssist.ButtonsVisibility="Visible" VerticalScrollBarVisibility="Visible" AutoGenerateColumns="False" IsReadOnly="True" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"
-                              VerticalAlignment="Stretch" Margin="10,10,10,10" ItemsSource="{Binding FilesAndDirectories}"
-                              MouseLeftButtonDown="DataGrid_MouseLeftButtonDown">
+                <DataGrid x:Name="FilesAndDirectoriesDataGrid" FontSize="17" Grid.Row="1" SelectionMode="Single" SelectionUnit="FullRow" materialDesign:ScrollBarAssist.ButtonsVisibility="Visible" VerticalScrollBarVisibility="Visible" AutoGenerateColumns="False" IsReadOnly="True" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"
+                                       VerticalAlignment="Stretch" Margin="10,10,10,10" ItemsSource="{Binding FilesAndDirectories}"
+                                       MouseLeftButtonDown="DataGrid_MouseLeftButtonDown">
                     <DataGrid.Columns>
                         <DataGridTemplateColumn Width="0.55*" Header="Name" >
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <Grid>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition/>
-                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="0.1*"/>
+                                            <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <Image MaxHeight="25" Grid.Column="0" Source="icons8-folder-30.png">
+                                        <Image MaxHeight="32" MaxWidth="32" Grid.Column="0" Source="{Binding DisplayedImage}" HorizontalAlignment="Left">
 
                                         </Image>
-                                        <TextBlock Text="{Binding Name}" Grid.Column="1"></TextBlock>
+                                        <TextBlock Text="{Binding Name}" Grid.Column="1" HorizontalAlignment="Left"></TextBlock>
                                     </Grid>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
@@ -73,6 +72,11 @@
                         <DataGridTextColumn Width="0.15*" Header="Type" Binding="{Binding Extension}"/>
                         <DataGridTextColumn Width="0.1*" Header="Size" Binding="{Binding Size}"/>
                     </DataGrid.Columns>
+                    <DataGrid.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Delete" Click="MenuItem_Click"></MenuItem>
+                        </ContextMenu>
+                    </DataGrid.ContextMenu>
                 </DataGrid>
             </Grid>
 
