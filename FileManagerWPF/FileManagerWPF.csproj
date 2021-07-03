@@ -78,6 +78,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="View\DisksWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -86,11 +90,14 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Models\Directories.cs" />
-    <Compile Include="Models\Files.cs" />
+    <Compile Include="Functions.cs" />
+    <Compile Include="Models\Base.cs" />
     <Compile Include="Models\Drive.cs" />
     <Compile Include="Models\FilesAndDirectories.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="View\DisksWindow.xaml.cs">
+      <DependentUpon>DisksWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

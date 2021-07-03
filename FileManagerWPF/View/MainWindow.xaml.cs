@@ -70,11 +70,14 @@ namespace FileManagerWPF
         {
             if (e.Key == Key.Enter)
             {
+                
                 ComboBox comboBox = (ComboBox) sender;
                 if (Directory.Exists(comboBox.Text))
                 {
                     dc.CurrentPath = comboBox.Text;
-                    ComboBoxPath.SelectedValue = dc.CurrentPath;
+                    dc.RefreshPathComboBox(dc.CurrentPath);
+                    ComboBoxPath.SelectedItem = dc.CurrentPath;
+
 
                 }
                 else
@@ -86,20 +89,18 @@ namespace FileManagerWPF
 
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ComboBox comboBox = (ComboBox) sender;
-            //dc.CurrentPath = comboBox.SelectedValue.ToString();
+            
         }
 
         private void ComboBox_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
-            dc.RefreshAllCommand.Execute(true);
         }
 
         private void DataGrid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             DataGrid grid = (DataGrid) sender;
             FilesAndDirectories element = (FilesAndDirectories)grid.SelectedItem;
-            if (element != null)
+            if (element != null && element.Path!=null)
             {
                 if (element.Extension == "Directory")
                 {
