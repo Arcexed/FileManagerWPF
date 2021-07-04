@@ -292,11 +292,8 @@ namespace FileManagerWPF
             }
 
         }
-        public ICommand NewDirectoryCommand { get; private set; }
+        
 
-        private void ExecuteNewDirectory()
-        {
-            
-        }
+        public string[] AddNewFileOrDirectory { get; set; } = {"Directory", "File"};
     }
 }

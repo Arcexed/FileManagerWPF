@@ -38,18 +38,31 @@
             </Border.Effect>
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="0.2*"/>
-                    <RowDefinition Height="0.8*"/>
+                    <RowDefinition Height="0.15*"/>
+                    <RowDefinition Height="0.15*"/>
+                    <RowDefinition Height="0.7*"/>
                 </Grid.RowDefinitions>
                 <Border Grid.Row="0">
                     <Grid Margin="0 0 0 20">
                         <Button HorizontalAlignment="Left" MinHeight="30" MinWidth="20" Content="Refresh" Command="{Binding RefreshAllCommand}"/>
                         <Button HorizontalAlignment="Left" Margin="110 0 0 0" Content="UP" Command="{Binding UpToDirectoryCommand}"/>
-                        <ComboBox x:Name="ComboBoxPath" SelectedItem="{Binding CurrentPath}" Text="C:\" HorizontalAlignment="Center" VerticalAlignment="Center" MinHeight="30" MinWidth="230" Margin="115 0 0 0" IsEditable="True" ItemsSource="{Binding Path=PathComboBox}" KeyDown="ComboBox_KeyDown" SelectionChanged="ComboBox_SelectionChanged"/>
+                        <ComboBox x:Name="ComboBoxPath" SelectedItem="{Binding    CurrentPath}" Text="C:\" HorizontalAlignment="Center" VerticalAlignment="Center" MinHeight="30" MinWidth="230" Margin="115 0 0 0" IsEditable="True" ItemsSource="{Binding Path=PathComboBox}" KeyDown="ComboBox_KeyDown" SelectionChanged="ComboBox_SelectionChanged"/>
                         <Button HorizontalAlignment="Right" Content="GO" Style="{StaticResource MaterialDesignFlatButton}"/>
                     </Grid>
                 </Border>
-                <DataGrid x:Name="FilesAndDirectoriesDataGrid" FontSize="17" Grid.Row="1" SelectionMode="Single" SelectionUnit="FullRow" materialDesign:ScrollBarAssist.ButtonsVisibility="Visible" VerticalScrollBarVisibility="Visible" AutoGenerateColumns="False" IsReadOnly="False" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"
+                <Border Grid.Row="1">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="0.55*"/>
+                            <ColumnDefinition Width="0.3*"/>
+                            <ColumnDefinition Width="0.15*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox Grid.Column="0" HorizontalAlignment="Left" MinWidth="500" Height="30" Margin="10"></TextBox>
+                        <ComboBox x:Name="ComboboxWithFileOrDirectory" Grid.Column="1" HorizontalAlignment="Left" MinWidth="500" Height="30" Margin="10" ItemsSource="{Binding AddNewFileOrDirectory}"></ComboBox>
+                        <Button Grid.Column="2" HorizontalAlignment="Left" MinWidth="30" Height="30" Margin="10" Content="Add" HorizontalContentAlignment="Left" Click="Button_Click"></Button>
+                    </Grid>
+                    </Border>
+<DataGrid x:Name="FilesAndDirectoriesDataGrid" FontSize="17" Grid.Row="2" SelectionMode="Single" SelectionUnit="FullRow" materialDesign:ScrollBarAssist.ButtonsVisibility="Visible" VerticalScrollBarVisibility="Visible" AutoGenerateColumns="False" IsReadOnly="False" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"
                                        VerticalAlignment="Stretch" Margin="10,10,10,10" ItemsSource="{Binding FilesAndDirectories,UpdateSourceTrigger=PropertyChanged}"
                                        MouseLeftButtonDown="DataGrid_MouseLeftButtonDown" SelectedItem="{Binding SelectedFileAndDirectory,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" >
                     <DataGrid.Columns>

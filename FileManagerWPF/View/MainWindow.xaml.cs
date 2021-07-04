@@ -150,5 +150,10 @@ namespace FileManagerWPF
                 dc.RefreshAllCommand.Execute(true);
             }
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
