@@ -189,7 +189,7 @@ namespace FileManagerWPF
                     Path = info.FullName,
                     Extension = info.Extension,
                     DateEdited = info.LastWriteTime.ToShortDateString(),
-                    Size = Math.Round((double) (info.Length / 1000)).ToString() + " Kbyte"
+                    Size = Math.Round((double) (info.Length / 1000)).ToString() + " Kbyte" 
                 });
             }
         }
