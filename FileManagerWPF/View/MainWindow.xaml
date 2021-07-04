@@ -7,10 +7,10 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
         Title="MainWindow" MinHeight="550" MinWidth="800" Closing="Window_Closing">
-    <Grid Background="#ffdadada">
+    <Grid  Background="#ffdadada">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="0.35*"/>
-            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="0.22*"/>
+            <ColumnDefinition Width="0.75*"/>
         </Grid.ColumnDefinitions>
         <Border Grid.Column="0" Margin="5 10 10 10" Background="White" VerticalAlignment="Stretch" Padding="30" CornerRadius="20" HorizontalAlignment="Stretch">
             <Border.Effect>
@@ -36,35 +36,70 @@
             <Border.Effect>
                 <DropShadowEffect BlurRadius="30" Color="LightGray" ShadowDepth="0"/>
             </Border.Effect>
-            <StackPanel>
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="0.2*"/>
-                        <RowDefinition Height="0.8*"/>
-                    </Grid.RowDefinitions>
-                    <Border Grid.Row="0">
-                        <Grid Margin="0 0 0 20">
-                            <Button HorizontalAlignment="Left" MinHeight="30" MinWidth="20" Content="Refresh" Command="{Binding RefreshAllCommand}"/>
-                            <Button HorizontalAlignment="Left" Margin="110 0 0 0" Content="UP" Command="{Binding UpToDirectoryCommand}"/>
-                            <ComboBox x:Name="ComboBoxPath" SelectedValue="{Binding path}" HorizontalAlignment="Center" VerticalAlignment="Center" MinHeight="30" MinWidth="230" Margin="115 0 0 0" IsEditable="True" ItemsSource="{Binding Path=PathComboBox}" KeyDown="ComboBox_KeyDown" SelectionChanged="ComboBox_SelectionChanged" ContextMenuOpening="ComboBox_ContextMenuOpening"/>
-                            <Button HorizontalAlignment="Right" Content="GO" Style="{StaticResource MaterialDesignFlatButton}"/>
-                        </Grid>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="0.15*"/>
+                    <RowDefinition Height="0.15*"/>
+                    <RowDefinition Height="0.7*"/>
+                </Grid.RowDefinitions>
+                <Border Grid.Row="0">
+                    <Grid Margin="0 0 0 20">
+                        <Button HorizontalAlignment="Left" MinHeight="30" MinWidth="20" Content="Refresh" Command="{Binding RefreshAllCommand}"/>
+                        <Button HorizontalAlignment="Left" Margin="110 0 0 0" Content="UP" Command="{Binding UpToDirectoryCommand}"/>
+                        <ComboBox x:Name="ComboBoxPath" SelectedItem="{Binding    CurrentPath}" Text="C:\" HorizontalAlignment="Center" VerticalAlignment="Center" MinHeight="30" MinWidth="230" Margin="115 0 0 0" IsEditable="True" ItemsSource="{Binding Path=PathComboBox}" KeyDown="ComboBox_KeyDown" SelectionChanged="ComboBox_SelectionChanged"/>
+                        <Button HorizontalAlignment="Right" Content="GO" Style="{StaticResource MaterialDesignFlatButton}" Click="Button_Click_1" />
+                    </Grid>
+                </Border>
+                <Border Grid.Row="1">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="0.55*"/>
+                            <ColumnDefinition Width="0.3*"/>
+                            <ColumnDefinition Width="0.15*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox Grid.Column="0" HorizontalAlignment="Left" MinWidth="500" Height="30" Margin="10"></TextBox>
+                        <ComboBox x:Name="ComboboxWithFileOrDirectory" Grid.Column="1" HorizontalAlignment="Left" MinWidth="500" Height="30" Margin="10" ItemsSource="{Binding AddNewFileOrDirectory}"></ComboBox>
+                        <Button Grid.Column="2" HorizontalAlignment="Left" MinWidth="30" Height="30" Margin="10" Content="Add" HorizontalContentAlignment="Left" Click="Button_Click"></Button>
+                    </Grid>
                     </Border>
-                    <DataGrid Grid.Row="1" SelectionMode="Single" SelectionUnit="FullRow" materialDesign:ScrollBarAssist.ButtonsVisibility="Visible" VerticalScrollBarVisibility="Visible" AutoGenerateColumns="False" IsReadOnly="True" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"
-                              VerticalAlignment="Stretch" Margin="10,10,10,10" ItemsSource="{Binding FilesAndDirectories}"
-                              MouseLeftButtonDown="DataGrid_MouseLeftButtonDown">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Width="0.55*" Header="Name" Binding="{Binding Name}"/>
-                            <DataGridTextColumn Width="0.2*" Header="Edited Date" Binding="{Binding DateEdited}"/>
-                            <DataGridTextColumn Width="0.15*" Header="Type" Binding="{Binding Extension}"/>
-                            <DataGridTextColumn Width="0.1*" Header="Size" Binding="{Binding Size}"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </Grid>
-                
+<DataGrid x:Name="FilesAndDirectoriesDataGrid" FontSize="17" Grid.Row="2" SelectionMode="Single" SelectionUnit="FullRow" materialDesign:ScrollBarAssist.ButtonsVisibility="Visible" VerticalScrollBarVisibility="Visible" AutoGenerateColumns="False" IsReadOnly="False" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"
+                                       VerticalAlignment="Stretch" Margin="10,10,10,10" ItemsSource="{Binding FilesAndDirectories,UpdateSourceTrigger=PropertyChanged}"
+                                       MouseLeftButtonDown="DataGrid_MouseLeftButtonDown" SelectedItem="{Binding SelectedFileAndDirectory,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" >
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Width="0.55*" Header="Name">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="0.1*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Image MaxHeight="32" MaxWidth="32" Grid.Column="0" Source="{Binding DisplayedImage}" HorizontalAlignment="Left">
 
-            </StackPanel>
+                                        </Image>
+                                        <TextBox Text="{Binding Name}" Grid.Column="1" HorizontalAlignment="Left"></TextBox>
+                                    </Grid>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn IsReadOnly="True" Width="0.2*" Header="Edited Date" Binding="{Binding DateEdited}"/>
+                        <DataGridTextColumn IsReadOnly="True" Width="0.15*" Header="Type" Binding="{Binding Extension}"/>
+                        <DataGridTextColumn IsReadOnly="True" Width="0.1*" Header="Size" Binding="{Binding Size}"/>
+
+                    </DataGrid.Columns>
+                    <DataGrid.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Copy" Command="{Binding CopyPathCommand,UpdateSourceTrigger=PropertyChanged}"/>
+                            <MenuItem Header="Cut" Command="{Binding CutPathCommand,UpdateSourceTrigger=PropertyChanged}"></MenuItem>
+                            <MenuItem Header="Rename" Command="{Binding CutPathCommand,UpdateSourceTrigger=PropertyChanged}"></MenuItem>
+                            <MenuItem Header="New Folder" ></MenuItem>
+                            <MenuItem Header="New File"></MenuItem>
+                            <MenuItem Header="Paste" IsEnabled="{Binding IsPasteEnabled,UpdateSourceTrigger=PropertyChanged}" Command="{Binding PastePathCommand}"></MenuItem>
+                            <MenuItem Header="Delete" Click="MenuItem_Click"></MenuItem>
+                        </ContextMenu>
+                    </DataGrid.ContextMenu>
+                </DataGrid>
+            </Grid>
         </Border>
-
     </Grid>
 </Window>
