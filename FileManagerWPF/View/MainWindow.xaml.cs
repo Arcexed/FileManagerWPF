@@ -17,6 +17,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using FileManagerWPF.Models;
+using Path = System.IO.Path;
 
 namespace FileManagerWPF
 {
@@ -35,7 +36,7 @@ namespace FileManagerWPF
 
         private void DiskTextBox_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            TextBox s = (TextBox)sender;
+            TextBlock s = (TextBlock)sender;
             string diskName = s.Text.Split('\t')[0];
             foreach (var drive in dc.DrivesList)
             {
@@ -121,8 +122,9 @@ namespace FileManagerWPF
 
         private void DiskTextBox_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            FilesAndDirectories textBox = (FilesAndDirectories) sender;
-            dc.CurrentPath = textBox.Path;
+            TextBlock s = (TextBlock) sender;
+            string diskName = s.Text.Split('\t')[0];
+            dc.CurrentPath = diskName;
             
         }
 
@@ -153,12 +155,80 @@ namespace FileManagerWPF
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                string name = TextboxFileOrDirectory.Text;
+                string extension = ComboboxWithFileOrDirectory.SelectedValue.ToString();
+                if (extension.ToLower() == "directory")
+                {
+                    Directory.CreateDirectory(dc.CurrentPath + @"\" + name);
+                    dc.RefreshAllCommand.Execute(true);
 
+                }
+                else if (extension.ToLower() == "file")
+                {
+                    File.Create(dc.CurrentPath + @"\" + name);
+                    dc.RefreshAllCommand.Execute(true);
+
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void FilesAndDirectoriesDataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
+        {
+            //if (e.EditAction == DataGridEditAction.Commit)
+            //{
+            //    var col = e.Column;
+            //    var column = e.Column as DataGridBoundColumn;
+            //    if (column != null)
+            //    {
+            //        var bindingPath = (column.Binding as Binding).Path.Path;
+            //        if (bindingPath == "Col2")
+            //        {
+            //            int rowIndex = e.Row.GetIndex();
+            //            var el = e.EditingElement as TextBox;
+            //            // rowIndex has the row index
+            //            // bindingPath has the column's binding
+            //            // el.Text has the new, user-entered value
+            //        }
+            //    }
+            //}
+        }
+
+        private void TextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                TextBox t = (TextBox) sender;
+                FilesAndDirectories s = dc.SelectedFileAndDirectory;
+                if (s.Extension.ToLower() == "directory")
+                {
+                    DirectoryInfo d = new DirectoryInfo(s.Path);
+                    var pathSplit = d.Parent.FullName;
+                    Directory.Move(s.Path,pathSplit+@"\"+t.Text);
+                }
+                else
+                {
+                    FileInfo d = new FileInfo(s.Path);
+                    var pathSplit = d.Directory;
+                    
+                    File.Move(s.Path, pathSplit + @"\" + t.Text);
+
+                }
+
+                dc.RefreshAllCommand.Execute(true);
+            }
         }
     }
 }

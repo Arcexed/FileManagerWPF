@@ -26,7 +26,7 @@
                 <ListView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding DrivesList}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
                     <ListView.ItemTemplate>
                         <DataTemplate >
-                            <TextBox x:Name="DiskTextBox" IsReadOnly="True" Text="{Binding DriveInfo,Mode=OneWay}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" PreviewMouseLeftButtonDown="DiskTextBox_PreviewMouseLeftButtonDown" MouseLeftButtonDown="DiskTextBox_MouseLeftButtonDown"></TextBox>
+                            <TextBlock x:Name="DiskTextBox" Text="{Binding DriveInfo,Mode=OneWay}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" PreviewMouseLeftButtonDown="DiskTextBox_PreviewMouseLeftButtonDown" MouseLeftButtonDown="DiskTextBox_MouseLeftButtonDown"></TextBlock>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
@@ -57,14 +57,14 @@
                             <ColumnDefinition Width="0.3*"/>
                             <ColumnDefinition Width="0.15*"/>
                         </Grid.ColumnDefinitions>
-                        <TextBox Grid.Column="0" HorizontalAlignment="Left" MinWidth="500" Height="30" Margin="10"></TextBox>
-                        <ComboBox x:Name="ComboboxWithFileOrDirectory" Grid.Column="1" HorizontalAlignment="Left" MinWidth="500" Height="30" Margin="10" ItemsSource="{Binding AddNewFileOrDirectory}"></ComboBox>
+                        <TextBox x:Name="TextboxFileOrDirectory"  Grid.Column="0" HorizontalAlignment="Left" MinWidth="500" Height="30" Margin="10"></TextBox>
+                        <ComboBox x:Name="ComboboxWithFileOrDirectory" Grid.Column="1" HorizontalAlignment="Left" MinWidth="500" Height="30" Margin="10" SelectedIndex="0" ItemsSource="{Binding AddNewFileOrDirectory}"></ComboBox>
                         <Button Grid.Column="2" HorizontalAlignment="Left" MinWidth="30" Height="30" Margin="10" Content="Add" HorizontalContentAlignment="Left" Click="Button_Click"></Button>
                     </Grid>
                     </Border>
 <DataGrid x:Name="FilesAndDirectoriesDataGrid" FontSize="17" Grid.Row="2" SelectionMode="Single" SelectionUnit="FullRow" materialDesign:ScrollBarAssist.ButtonsVisibility="Visible" VerticalScrollBarVisibility="Visible" AutoGenerateColumns="False" IsReadOnly="False" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"
                                        VerticalAlignment="Stretch" Margin="10,10,10,10" ItemsSource="{Binding FilesAndDirectories,UpdateSourceTrigger=PropertyChanged}"
-                                       MouseLeftButtonDown="DataGrid_MouseLeftButtonDown" SelectedItem="{Binding SelectedFileAndDirectory,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" >
+                                       MouseLeftButtonDown="DataGrid_MouseLeftButtonDown" SelectedItem="{Binding SelectedFileAndDirectory,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" CellEditEnding="FilesAndDirectoriesDataGrid_CellEditEnding" >
                     <DataGrid.Columns>
                         <DataGridTemplateColumn Width="0.55*" Header="Name">
                             <DataGridTemplateColumn.CellTemplate>
@@ -77,7 +77,7 @@
                                         <Image MaxHeight="32" MaxWidth="32" Grid.Column="0" Source="{Binding DisplayedImage}" HorizontalAlignment="Left">
 
                                         </Image>
-                                        <TextBox Text="{Binding Name}" Grid.Column="1" HorizontalAlignment="Left"></TextBox>
+                                        <TextBox Text="{Binding Name}" Grid.Column="1" HorizontalAlignment="Left" KeyDown="TextBox_KeyDown"></TextBox>
                                     </Grid>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
@@ -92,8 +92,9 @@
                             <MenuItem Header="Copy" Command="{Binding CopyPathCommand,UpdateSourceTrigger=PropertyChanged}"/>
                             <MenuItem Header="Cut" Command="{Binding CutPathCommand,UpdateSourceTrigger=PropertyChanged}"></MenuItem>
                             <MenuItem Header="Rename" Command="{Binding CutPathCommand,UpdateSourceTrigger=PropertyChanged}"></MenuItem>
-                            <MenuItem Header="New Folder" ></MenuItem>
-                            <MenuItem Header="New File"></MenuItem>
+                            <!--<MenuItem Header="New Folder" ></MenuItem>
+                            <MenuItem Header="New File"></MenuItem>-->
+                            <MenuItem Header="Copy Path" Command="{Binding SetPathCommand}"></MenuItem>
                             <MenuItem Header="Paste" IsEnabled="{Binding IsPasteEnabled,UpdateSourceTrigger=PropertyChanged}" Command="{Binding PastePathCommand}"></MenuItem>
                             <MenuItem Header="Delete" Click="MenuItem_Click"></MenuItem>
                         </ContextMenu>

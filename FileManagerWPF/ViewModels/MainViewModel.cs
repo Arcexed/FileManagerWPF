@@ -34,6 +34,7 @@ namespace FileManagerWPF
             CutPathCommand = new RelayCommand(ExecuteCutPath);
             RefreshAllCommand = new RelayCommand(ExecuteRefreshAll);
             UpToDirectoryCommand = new RelayCommand(ExecuteUpToDirectory);
+            SetPathCommand = new RelayCommand(ExecuteSetPathClipboard);
         }
         public ObservableCollection<Drive> DrivesList { get; set; } = new ObservableCollection<Drive>();
 
@@ -132,12 +133,18 @@ namespace FileManagerWPF
             {
                 string Name = drive.Name;
                 string Type = drive.DriveType.ToString();
+                double FreeGB = 0;
+                double TotalGB = 0;
+                double UsedGB = 0;
                 int PersentUsedDiskSpace = 0;
                 if (drive.DriveType == DriveType.Fixed || drive.DriveType == DriveType.Removable)
                 {
                     PersentUsedDiskSpace = Convert.ToInt32(Math.Round(
                         (double)(drive.TotalSize - drive.TotalFreeSpace) /
                         drive.TotalSize * 100));
+                    FreeGB = Math.Round((double)drive.AvailableFreeSpace / 1024 / 1024 / 1024,2);
+                    TotalGB = Math.Round((double)drive.TotalSize / 1024 / 1024 / 1024,2);
+                    UsedGB = Math.Round((double)(drive.TotalSize - drive.TotalFreeSpace) / 1024 / 1024 / 1024,2);
                 }
 
 
@@ -145,7 +152,10 @@ namespace FileManagerWPF
                 {
                     Name = Name,
                     Type = Type,
-                    PersentUsedDiskSpace = PersentUsedDiskSpace
+                    PersentUsedDiskSpace = PersentUsedDiskSpace,
+                    FreeGB = FreeGB,
+                    UsedGB = UsedGB,
+                    TotalGB = TotalGB
                 });
             }
         }
@@ -294,7 +304,12 @@ namespace FileManagerWPF
 
         }
         
+        public ICommand SetPathCommand { get; private set; }
 
+        private void ExecuteSetPathClipboard()
+        {
+            Clipboard.SetText(_selectedFileAndDirectory.Path);
+        }
         public string[] AddNewFileOrDirectory { get; set; } = {"Directory", "File"};
     }
 }

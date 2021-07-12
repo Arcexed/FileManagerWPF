@@ -12,7 +12,9 @@ namespace FileManagerWPF.Models
         public string Name { get; set; }
 
         public string Type { get; set; }
-
+        public double UsedGB { get; set; }
+        public double FreeGB { get; set; }
+        public double TotalGB { get; set; }
         public int PersentUsedDiskSpace { get; set; }
         //
 
